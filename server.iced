@@ -13,7 +13,10 @@ commander.option "-d, --directory <path>", "The uppermost accessible directory"
 commander.parse process.argv
 
 PORT = if commander.port? then commander.port else 8080
-BASEPATH = if commander.directory then commander.directory else USERDIR
+if commander.directory and fs.existsSync(commander.directory)
+	BASEPATH = commander.directory
+else
+	BASEPATH = USERDIR
 BASEPATH += "/"
 BASEPATH = path.normalize BASEPATH
 
