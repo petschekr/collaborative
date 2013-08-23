@@ -47,11 +47,11 @@ app.get "/dir/*", (request, response) ->
 		# Failed the path check
 		response.redirect "/dir/"
 
-	await fs.readdir fullDirectory, defer (err, entries)
+	await fs.readdir fullDirectory, defer(err, entries)
 	dirList = []
 	fileList = []
 	for entry in entries
-		await fs.stat path.join(fullDirectory, entry), defer (err, stats)
+		await fs.stat path.join(fullDirectory, entry), defer(err, stats)
 		if stats.isDirectory()
 			dirList.push entry
 		else if stats.isFile()
