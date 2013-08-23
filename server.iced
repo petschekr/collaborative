@@ -50,14 +50,18 @@ app.get "/dir/*", (request, response) ->
 	await fs.readdir fullDirectory, defer(err, entries)
 	dirList = []
 	fileList = []
+	infoList = []
 	for entry in entries
 		await fs.stat path.join(fullDirectory, entry), defer(err, stats)
 		if stats.isDirectory()
 			dirList.push entry
 		else if stats.isFile()
 			fileList.push entry
+			size = readableSize stats.size
+			date = stats.ctime.toLocaleString()
+			infoList.push size + " " + date
 
-	response.render "directory.jade", {cwd: fullDirectory, cwdSmall: directory, dirList, fileList}, (err, html) ->
+	response.render "directory.jade", {cwd: fullDirectory, cwdSmall: directory, dirList, fileList, infoList}, (err, html) ->
 		if err then return response.send err
 		response.send html
 
