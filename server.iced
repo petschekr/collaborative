@@ -57,7 +57,7 @@ app.get "/dir/*", (request, response) ->
 		else if stats.isFile()
 			fileList.push entry
 
-	response.render "directory.jade", {cwd: directory, dirList, fileList}, (err, html) ->
+	response.render "directory.jade", {cwd: fullDirectory, cwdSmall: directory, dirList, fileList}, (err, html) ->
 		if err then return response.send err
 		response.send html
 
