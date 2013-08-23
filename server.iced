@@ -40,7 +40,7 @@ app = express()
 app.get "/", (request, response) ->
 	response.redirect "/dir/"
 app.get "/dir/*", (request, response) ->
-	directory = request.params[0] or ""
+	directory = request.params[0] + "/" or "/"
 	fullDirectory = path.join BASEPATH, (directory + "/")
 
 	unless fullDirectory.match(new RegExp("^" + BASEPATH))
