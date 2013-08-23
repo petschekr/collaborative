@@ -29,8 +29,11 @@ app = express()
 app.get "/", (request, response) ->
 	response.redirect "/dir/"
 app.get "/dir/*", (request, response) ->
-	directory = request.params[0]
-});
+	directory = request.params[0] or "/"
+	response.render "directory.jade", {cwd: directory}, (err, html) ->
+		if err then return response.send err
+		response.send html
 
 app.listen PORT, ->
 	console.log "You can now collaborate on port #{PORT}"
+	console.log "Uppermost accessible directory is #{BASEPATH}"
