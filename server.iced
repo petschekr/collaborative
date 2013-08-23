@@ -40,8 +40,24 @@ app = express()
 app.get "/", (request, response) ->
 	response.redirect "/dir/"
 app.get "/dir/*", (request, response) ->
-	directory = request.params[0] or "/"
-	response.render "directory.jade", {cwd: directory}, (err, html) ->
+	directory = request.params[0] or ""
+	fullDirectory = path.join BASEPATH, (directory + "/")
+
+	unless fullDirectory.match(new RegExp("^" + BASEPATH))
+		# Failed the path check
+		response.redirect "/dir/"
+
+	await fs.readdir fullDirectory, defer (err, entries)
+	dirList = []
+	fileList = []
+	for entry in entries
+		await fs.stat path.join(fullDirectory, entry), defer (err, stats)
+		if stats.isDirectory()
+			dirList.push entry
+		else if stats.isFile()
+			fileList.push entry
+
+	response.render "directory.jade", {cwd: directory, dirList, fileList}, (err, html) ->
 		if err then return response.send err
 		response.send html
 
