@@ -32,7 +32,10 @@ readableSize = (size) ->
 		# Exceeded labels
 		unitIndex = 0
 		size = origSize
-	return size.toFixed(2) + " " + units[unitIndex]
+	if unitIndex is 0
+		return Math.round(size).toString() + " " + units[unitIndex]
+	else
+		return size.toFixed(2) + " " + units[unitIndex]
 
 express = require "express"
 app = express()
