@@ -36,6 +36,29 @@ readableSize = (size) ->
 		return Math.round(size).toString() + " " + units[unitIndex]
 	else
 		return size.toFixed(2) + " " + units[unitIndex]
+buildDate = (date) ->
+	dateString = ""
+	dateString += (date.getMonth() + 1)
+	dateString += "/"
+	dateString += date.getDate()
+	dateString += "/"
+	dateString += (date.getYear() % 100)
+	dateString += " "
+	dateString += (date.getHours() % 12)
+	dateString += ":"
+	if date.getMinutes() < 10
+		dateString += "0"
+	dateString += date.getMinutes()
+	dateString += ":"
+	if date.getSeconds() < 10
+		dateString += "0"
+	dateString += date.getSeconds()
+	dateString += " "
+	if date.getHours() < 12
+		dateString += "AM"
+	else
+		dateString += "PM"
+	return dateString
 
 express = require "express"
 app = express()
@@ -61,8 +84,8 @@ app.get "/dir/*", (request, response) ->
 		else if stats.isFile()
 			fileList.push entry
 			size = readableSize stats.size
-			date = stats.ctime.toLocaleString()
-			infoList.push size + " " + date
+			date = buildDate stats.ctime
+			infoList.push size + " - " + date
 
 	response.render "directory.jade", {cwd: fullDirectory, cwdSmall: directory, dirList, fileList, infoList}, (err, html) ->
 		if err then return response.send err
