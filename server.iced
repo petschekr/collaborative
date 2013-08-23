@@ -24,7 +24,7 @@ readableSize = (size) ->
 	origSize = size
 	unitSize = 1024
 	unitIndex = 0
-	units = ["bytes", "KiB", "MiB", "GiB", "TiB", "PiB"]
+	units = ["bytes", "KB", "MB", "GB", "TB", "PB"]
 	while size >= unitSize
 		unitIndex++
 		size /= unitSize
