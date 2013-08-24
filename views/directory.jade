@@ -10,6 +10,13 @@ html(lang="en")
 			.pure-u-1-5#list
 				.title
 					h3(title=cwd)= cwdSmall
+				each folder in dirList
+					if folder[0] == "."
+						.folder.hidden
+							h4= folder
+					else
+						.folder
+							h4= folder
 				each file, index in fileList
 					if index == 0
 						.files-item.selected
