@@ -1,0 +1,30 @@
+doctype 5
+html(lang="en")
+	head
+		include meta.html
+		title= cwdSmall
+		include css/pure-0.2.1.min.css
+		include css/directory.less
+	body
+		.pure-g-r.content
+			.pure-u-1-5#list
+				.title
+					h3(title=cwd)= cwdSmall
+				each folder in dirList
+					if folder[0] == "."
+						.folder.hidden
+							h4= folder
+					else
+						.folder
+							h4= folder
+				each file, index in fileList
+					if index == 0
+						.files-item.selected
+							h4= file
+							p= infoList[index]
+					else
+						.files-item
+							h4= file
+							p= infoList[index]
+			.pure-u-4-5#main
+				h1 Stuff

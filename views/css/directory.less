@@ -1,0 +1,50 @@
+* {
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+body, html, .content {
+	height: 100%;
+}
+@border-color: #bbb;
+#list {
+	border-right: 1px solid @border-color;
+	height: 100%;
+	overflow: auto;
+	.title {
+		h3 {
+			margin: 0;
+			color: lighten(black, 50%);
+		}
+		padding: 6px 10px;
+		border-bottom: 1px solid @border-color;
+	}
+}
+.files-item, .folder {
+	padding: 6px 10px;
+	border-bottom: 1px solid @border-color;
+	border-left: 6px solid transparent;
+	cursor: pointer;
+	&.selected {
+		background-color: #eee;
+	}
+	h4 {
+		margin: 0;
+		font-size: 85%
+	}
+	p {
+		margin: 0;
+		font-size: 75%;
+	}
+}
+.folder.hidden {
+	padding: 0;
+	padding-left: 10px;
+	opacity: 0.8;
+	height: 18px;
+}
+#main {
+	float: right;
+	h1, h2, h3, h4, h5, h6 {
+		margin: 10px;
+	}
+}
