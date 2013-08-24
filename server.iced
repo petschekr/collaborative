@@ -74,6 +74,9 @@ app.get "/dir/*", (request, response) ->
 		response.redirect "/dir/"
 
 	await fs.readdir fullDirectory, defer(err, entries)
+	if err
+		response.send 404, "That directory doesn't exist"
+		return
 	dirList = []
 	fileList = []
 	infoList = []
