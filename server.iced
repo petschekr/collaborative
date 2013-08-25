@@ -63,6 +63,9 @@ buildDate = (date) ->
 express = require "express"
 app = express()
 
+app.configure ->
+	app.use express.compress()
+
 app.get "/*", (request, response) ->
 	directory = request.params[0] + "/" or "/"
 	directory = path.normalize directory
