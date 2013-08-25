@@ -101,5 +101,12 @@ server = http.createServer(app).listen PORT, ->
 WSServer = require("ws").Server
 wss = new WSServer {server}
 wss.on "connection", (ws) ->
+	ip = ws._socket.remoteAddress
+	console.log "New connection from IP: #{ip}"
 	ws.on "message", (message) ->
-		console.log('received: %s', message);
+		try
+			message = JSON.parse message
+		catch e
+			return console.warn "#{ip} sent invalid JSON"
+	ws.on "close", ->
+		"#{ip} disconnected"
