@@ -108,5 +108,17 @@ wss.on "connection", (ws) ->
 			message = JSON.parse message
 		catch e
 			return console.warn "#{ip} sent invalid JSON"
+		switch message.Action
+			when "file"
+				# Load a file into the view
+				undefined
+			when "edit"
+				# Person made a change to the open file
+				undefined
+			when "rename"
+				# Person renamed file
+				undefined
+			else
+				console.warn "#{ip} sent invalid action: #{message.Action}"
 	ws.on "close", ->
 		"#{ip} disconnected"
