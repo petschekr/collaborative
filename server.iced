@@ -93,6 +93,13 @@ app.get "/*", (request, response) ->
 		if err then return response.send err
 		response.send html
 
-app.listen PORT, ->
+server = http.createServer(app).listen PORT, ->
 	console.log "You can now collaborate on port #{PORT}"
 	console.log "Uppermost accessible directory is #{BASEPATH}"
+
+# WebSocket stuff
+WSServer = require("ws").Server
+wss = new WSServer {server}
+wss.on "connection", (ws) ->
+	ws.on "message", (message) ->
+		console.log('received: %s', message);
