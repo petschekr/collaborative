@@ -32,6 +32,9 @@ if commander.credentials
 		throw new Error "Username or password cannot be left blank"
 	CREDENTIALS = {username, password}
 
+createNonce = (cb, bytes = 32) ->
+	crypto.randomBytes bytes, (err, buffer) ->
+		cb buffer.toString "hex"
 readableSize = (size) ->
 	origSize = size
 	unitSize = 1024
@@ -79,6 +82,10 @@ app.configure ->
 	app.use express.compress()
 	if CREDENTIALS?
 		app.use express.basicAuth CREDENTIALS.username, CREDENTIALS.password, "This server requires authentication"
+		app.use (request, response, next) ->
+			# Set a cookie for authed server
+			await createNonce defer id
+			response.cookie "id", id
 
 app.get "/*", (request, response) ->
 	directory = request.params[0] + "/" or "/"
