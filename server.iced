@@ -82,7 +82,7 @@ AVAILABLE_IDS = undefined
 app.configure ->
 	app.use express.compress()
 	if CREDENTIALS?
-		app.use express.basicAuth CREDENTIALS.username, CREDENTIALS.password, "This server requires authentication"
+		app.use express.basicAuth CREDENTIALS.username, CREDENTIALS.password, "Authentication required to collaborate"
 		AVAILABLE_IDS = []
 		app.use (request, response, next) ->
 			# Set a cookie for authed server
