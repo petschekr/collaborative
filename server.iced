@@ -10,6 +10,7 @@ USERDIR = path.normalize(USERDIR);
 commander.version "0.0.1"
 commander.option "-p, --port <n>", "The port for the server to listen on", parseInt
 commander.option "-d, --directory <path>", "The uppermost accessible directory"
+commander.option "-c, --credentials <username:password>", "Make the server only accessible with a username and passoword"
 commander.parse process.argv
 
 PORT = if commander.port? then commander.port else 8080
@@ -19,6 +20,17 @@ else
 	BASEPATH = USERDIR
 BASEPATH += "/"
 BASEPATH = path.normalize BASEPATH
+# Credentials
+CREDENTIALS = undefined
+if commander.credentials
+	creds = commander.credentials.split ":"
+	if creds.length != 2
+		throw new Error "The format for credentials is username:password"
+	username = creds[0]
+	password = creds[1]
+	if username is "" or password is ""
+		throw new Error "Username or password cannot be left blank"
+	CREDENTIALS = {username, password}
 
 readableSize = (size) ->
 	origSize = size
@@ -65,6 +77,8 @@ app = express()
 
 app.configure ->
 	app.use express.compress()
+	if CREDENTIALS?
+		app.use express.basicAuth CREDENTIALS.username, CREDENTIALS.password, "This server requires authentication"
 
 app.get "/*", (request, response) ->
 	directory = request.params[0] + "/" or "/"
