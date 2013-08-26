@@ -78,14 +78,17 @@ buildDate = (date) ->
 express = require "express"
 app = express()
 
+AVAILABLE_IDS = undefined
 app.configure ->
 	app.use express.compress()
 	if CREDENTIALS?
 		app.use express.basicAuth CREDENTIALS.username, CREDENTIALS.password, "This server requires authentication"
+		AVAILABLE_IDS = []
 		app.use (request, response, next) ->
 			# Set a cookie for authed server
 			await createNonce defer id
 			response.cookie "id", id
+			AVAILABLE_IDS.push id
 
 app.get "/*", (request, response) ->
 	directory = request.params[0] + "/" or "/"
