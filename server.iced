@@ -96,6 +96,32 @@ app.get "/*", (request, response) ->
 		if err then return response.send err
 		response.send html
 
-app.listen PORT, ->
+server = http.createServer(app).listen PORT, ->
 	console.log "You can now collaborate on port #{PORT}"
 	console.log "Uppermost accessible directory is #{BASEPATH}"
+
+# WebSocket stuff
+WSServer = require("ws").Server
+wss = new WSServer {server}
+wss.on "connection", (ws) ->
+	ip = ws._socket.remoteAddress
+	console.log "New connection from IP: #{ip}"
+	ws.on "message", (message) ->
+		try
+			message = JSON.parse message
+		catch e
+			return console.warn "#{ip} sent invalid JSON"
+		switch message.Action
+			when "file"
+				# Load a file into the view
+				undefined
+			when "edit"
+				# Person made a change to the open file
+				undefined
+			when "rename"
+				# Person renamed file
+				undefined
+			else
+				console.warn "#{ip} sent invalid action: #{message.Action}"
+	ws.on "close", ->
+		"#{ip} disconnected"
