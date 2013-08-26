@@ -48,3 +48,22 @@ body, html, .content {
 		margin: 10px;
 	}
 }
+#status {
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 25px;
+	width: auto;
+	letter-spacing: normal;
+	background-color: #eee;
+	border-left: 1px solid @border-color;
+	border-bottom: 1px solid @border-color;
+	border-bottom-left-radius: 4px;
+	padding: 2px 6px 2px;
+	font-size: 95%;
+	@duration: 0.5s;
+	-webkit-transition: opacity @duration;
+	-moz-transition: opacity @duration;
+	transition: opacity @duration;
+	opacity: 1;
+}
