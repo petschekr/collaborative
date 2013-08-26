@@ -124,4 +124,4 @@ wss.on "connection", (ws) ->
 			else
 				console.warn "#{ip} sent invalid action: #{message.Action}"
 	ws.on "close", ->
-		"#{ip} disconnected"
+		console.log "#{ip} disconnected"
