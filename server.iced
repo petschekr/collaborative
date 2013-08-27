@@ -81,14 +81,21 @@ app = express()
 AVAILABLE_IDS = undefined
 app.configure ->
 	app.use express.compress()
+	app.use express.cookieParser()
 	if CREDENTIALS?
 		app.use express.basicAuth CREDENTIALS.username, CREDENTIALS.password, "Authentication required to collaborate"
 		AVAILABLE_IDS = []
 		app.use (request, response, next) ->
-			# Set a cookie for authed server
-			await createNonce defer id
-			response.cookie "id", id
-			AVAILABLE_IDS.push id
+			unless request.cookies.id
+				# Set a cookie for authed server
+				await createNonce defer id
+				response.cookie "id", id
+				AVAILABLE_IDS.push id
+			else
+				# Check for validity
+				if AVAILABLE_IDS.indexOf(request.cookies.id) < 0
+					response.clearCookie "id"
+			next()
 
 app.get "/*", (request, response) ->
 	directory = request.params[0] + "/" or "/"
@@ -136,6 +143,16 @@ wss.on "connection", (ws) ->
 		catch e
 			return console.warn "#{ip} sent invalid JSON"
 		switch message.Action
+			when "auth"
+				return unless CREDENTIALS?
+				id = message.ID
+				indexID = AVAILABLE_IDS.indexOf id
+				if indexID < 0
+					# The person submitted an invalid ID
+					return ws.close()
+				tmp = []
+				tmp.push idToPush for idToPush in AVAILABLE_IDS when idToPush isnt id
+				AVAILABLE_IDS = tmp
 			when "file"
 				# Load a file into the view
 				undefined
