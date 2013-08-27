@@ -130,6 +130,8 @@ app.get "/*", (request, response) ->
 server = http.createServer(app).listen PORT, ->
 	console.log "You can now collaborate on port #{PORT}"
 	console.log "Uppermost accessible directory is #{BASEPATH}"
+	if CREDENTIALS?
+		console.log "Authentication enabled:\n\tUsername: #{CREDENTIALS.username}, Password: #{CREDENTIALS.password}"
 
 # WebSocket stuff
 WSServer = require("ws").Server
