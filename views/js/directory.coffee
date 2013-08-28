@@ -1,6 +1,6 @@
 window.onload = ->
 	# Functions
-	window.cookieParser = (cookieName) ->
+	window.cookieParser = (cookieName = "id") ->
 		regex = new RegExp cookieName + "=([^;]*)", "g"
 		result = regex.exec document.cookie
 		return (
@@ -27,8 +27,16 @@ window.onload = ->
 		setTimeout ->
 			messageBox.style.opacity = "0"
 		, 500
+		# Send auth message
+		toSend =
+			"Action": "auth"
+			"ID": cookieParser()
+		toSend = JSON.stringify toSend
+		window.SOCKET.send toSend
 	window.SOCKET.onmessage = (message) ->
 		try
 			message = JSON.parse message.data
 		catch e
 			return console.warn "The server sent invalid JSON"
+	window.SOCKET.onclose = ->
+		console.error "The server closed the connection, this may mean that authentication failed"

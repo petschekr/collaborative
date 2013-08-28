@@ -132,6 +132,7 @@ server = http.createServer(app).listen PORT, ->
 WSServer = require("ws").Server
 wss = new WSServer {server}
 wss.on "connection", (ws) ->
+	AUTHED = no
 	ip = ws._socket.remoteAddress
 	console.log "New connection from IP: #{ip}"
 	ws.on "message", (message) ->
@@ -141,15 +142,22 @@ wss.on "connection", (ws) ->
 			return console.warn "#{ip} sent invalid JSON"
 		switch message.Action
 			when "auth"
-				return unless CREDENTIALS?
-				id = message.ID
-				indexID = AVAILABLE_IDS.indexOf id
-				if indexID < 0
-					# The person submitted an invalid ID
-					return ws.close()
-				tmp = []
-				tmp.push idToPush for idToPush in AVAILABLE_IDS when idToPush isnt id
-				AVAILABLE_IDS = tmp
+				if CREDENTIALS?
+					id = message.ID
+					indexID = AVAILABLE_IDS.indexOf id
+					if indexID < 0
+						# The person submitted an invalid ID
+						console.log "Rejected socket auth attempt: #{ip}"
+						return ws.close()
+					tmp = []
+					tmp.push idToPush for idToPush in AVAILABLE_IDS when idToPush isnt id
+					AVAILABLE_IDS = tmp
+				AUTHED = yes
+				toSend =
+					"Response": "auth"
+					"Authed": true
+				toSend = JSON.stringify toSend
+				ws.send toSend
 			when "file"
 				# Load a file into the view
 				undefined
