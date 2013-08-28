@@ -86,15 +86,10 @@ app.configure ->
 		app.use express.basicAuth CREDENTIALS.username, CREDENTIALS.password, "Authentication required to collaborate"
 		AVAILABLE_IDS = []
 		app.use (request, response, next) ->
-			unless request.cookies.id
-				# Set a cookie for authed server
-				await createNonce defer id
-				response.cookie "id", id
-				AVAILABLE_IDS.push id
-			else
-				# Check for validity
-				if AVAILABLE_IDS.indexOf(request.cookies.id) < 0
-					response.clearCookie "id"
+			# Set a cookie for authed server
+			await createNonce defer id
+			response.cookie "id", id
+			AVAILABLE_IDS.push id
 			next()
 
 app.get "/*", (request, response) ->
