@@ -10,6 +10,7 @@ USERDIR = path.normalize(USERDIR);
 commander.version "0.0.1"
 commander.option "-p, --port <n>", "The port for the server to listen on", parseInt
 commander.option "-d, --directory <path>", "The uppermost accessible directory"
+commander.option "-c, --credentials <username:password>", "Make the server only accessible with a username and passoword"
 commander.parse process.argv
 
 PORT = if commander.port? then commander.port else 8080
@@ -19,7 +20,21 @@ else
 	BASEPATH = USERDIR
 BASEPATH += "/"
 BASEPATH = path.normalize BASEPATH
+# Credentials
+CREDENTIALS = undefined
+if commander.credentials
+	creds = commander.credentials.split ":"
+	if creds.length != 2
+		throw new Error "The format for credentials is username:password"
+	username = creds[0]
+	password = creds[1]
+	if username is "" or password is ""
+		throw new Error "Username or password cannot be left blank"
+	CREDENTIALS = {username, password}
 
+createNonce = (cb, bytes = 32) ->
+	crypto.randomBytes bytes, (err, buffer) ->
+		cb buffer.toString "hex"
 readableSize = (size) ->
 	origSize = size
 	unitSize = 1024
@@ -63,8 +78,19 @@ buildDate = (date) ->
 express = require "express"
 app = express()
 
+AVAILABLE_IDS = undefined
 app.configure ->
 	app.use express.compress()
+	app.use express.cookieParser()
+	if CREDENTIALS?
+		app.use express.basicAuth CREDENTIALS.username, CREDENTIALS.password, "Authentication required to collaborate"
+		AVAILABLE_IDS = []
+		app.use (request, response, next) ->
+			# Set a cookie for authed server
+			await createNonce defer id
+			response.cookie "id", id
+			AVAILABLE_IDS.push id
+			next()
 
 app.get "/*", (request, response) ->
 	directory = request.params[0] + "/" or "/"
@@ -99,11 +125,14 @@ app.get "/*", (request, response) ->
 server = http.createServer(app).listen PORT, ->
 	console.log "You can now collaborate on port #{PORT}"
 	console.log "Uppermost accessible directory is #{BASEPATH}"
+	if CREDENTIALS?
+		console.log "Authentication enabled:\n\tUsername: #{CREDENTIALS.username}, Password: #{CREDENTIALS.password}"
 
 # WebSocket stuff
 WSServer = require("ws").Server
 wss = new WSServer {server}
 wss.on "connection", (ws) ->
+	AUTHED = no
 	ip = ws._socket.remoteAddress
 	console.log "New connection from IP: #{ip}"
 	ws.on "message", (message) ->
@@ -112,6 +141,23 @@ wss.on "connection", (ws) ->
 		catch e
 			return console.warn "#{ip} sent invalid JSON"
 		switch message.Action
+			when "auth"
+				if CREDENTIALS?
+					id = message.ID
+					indexID = AVAILABLE_IDS.indexOf id
+					if indexID < 0
+						# The person submitted an invalid ID
+						console.log "Rejected socket auth attempt: #{ip}"
+						return ws.close()
+					tmp = []
+					tmp.push idToPush for idToPush in AVAILABLE_IDS when idToPush isnt id
+					AVAILABLE_IDS = tmp
+				AUTHED = yes
+				toSend =
+					"Response": "auth"
+					"Authed": true
+				toSend = JSON.stringify toSend
+				ws.send toSend
 			when "file"
 				# Load a file into the view
 				undefined
