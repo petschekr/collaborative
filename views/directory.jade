@@ -19,12 +19,13 @@ html(lang="en")
 						.folder
 							h4= folder
 				each file, index in fileList
+					- var filePath = cwd + file;
 					if index == 0
-						.files-item.selected
+						.files-item.selected(data-path=filePath)
 							h4= file
 							p= infoList[index]
 					else
-						.files-item
+						.files-item(data-path=filePath)
 							h4= file
 							p= infoList[index]
 			.pure-u-4-5#main

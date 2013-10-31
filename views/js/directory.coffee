@@ -19,6 +19,16 @@ window.onload = ->
 		, 2000
 		return
 
+	LoadFile = ->
+		# Load the selected file
+		file = document.querySelector ".files-item.selected"
+		path = file.attributes["data-path"]
+		toSend =
+			"Action": "info"
+			"File": path
+		toSend = JSON.stringify toSend
+		window.SOCKET.send toSend
+
 	host = window.location.host
 	window.SOCKET = new WebSocket "ws://#{host}"
 	window.SOCKET.onopen = ->
@@ -41,8 +51,14 @@ window.onload = ->
 			return console.warn "The server sent invalid JSON"
 		if not AUTHED and message.Response is "auth" and message.Authed is true
 			AUTHED = yes
+			LoadFile()
 			return
 
-		
+		switch message.Response
+			when "info"
+				undefined
+			else
+				console.warn "Server responded with unknown response of type '#{message.Response}'"
+
 	window.SOCKET.onclose = ->
 		console.error "The server closed the connection, this may mean that authentication failed"

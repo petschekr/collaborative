@@ -158,6 +158,9 @@ wss.on "connection", (ws) ->
 					"Authed": true
 				toSend = JSON.stringify toSend
 				ws.send toSend
+			when "info"
+				# Get information regarding a file
+				undefined
 			when "file"
 				# Load a file into the view
 				undefined
