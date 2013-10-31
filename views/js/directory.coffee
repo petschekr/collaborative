@@ -1,4 +1,5 @@
 window.onload = ->
+	AUTHED = no
 	# Functions
 	window.cookieParser = (cookieName = "id") ->
 		regex = new RegExp cookieName + "=([^;]*)", "g"
@@ -38,5 +39,10 @@ window.onload = ->
 			message = JSON.parse message.data
 		catch e
 			return console.warn "The server sent invalid JSON"
+		if not AUTHED and message.Response is "auth" and message.Authed is true
+			AUTHED = yes
+			return
+
+		
 	window.SOCKET.onclose = ->
 		console.error "The server closed the connection, this may mean that authentication failed"
