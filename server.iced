@@ -99,7 +99,7 @@ app.get "/*", (request, response) ->
 
 	unless fullDirectory.match(new RegExp("^" + BASEPATH))
 		# Failed the path check
-		response.redirect "/dir/"
+		response.redirect "/"
 
 	await fs.readdir fullDirectory, defer(err, entries)
 	if err
