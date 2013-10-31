@@ -11,6 +11,10 @@ html(lang="en")
 			.pure-u-1-5#list
 				.title
 					h3(title=cwd)= cwdSmall
+				if cwdSmall != "/"
+					.folder
+						h4 
+							a(href="../") ↩
 				each folder in dirList
 					if folder[0] == "."
 						.folder.hidden
