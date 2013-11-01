@@ -144,7 +144,33 @@ wss.on "connection", (ws) ->
 				ws.send toSend
 			when "info"
 				# Get information regarding a file
-				undefined
+				file = message.File
+				await fs.stat file, defer(err, stats)
+				if err
+					toSend =
+						"Response": "info"
+						"Error": err
+					toSend = JSON.stringify toSend
+					return ws.send toSend
+				if stats.isFile()
+					fileInfo =
+						"File": yes
+						"Size": readableSize stats.size
+						"Path": path.basename file
+						"FullPath": path.normalize file
+						"Time":
+							"Accessed": buildDate stats.atime
+							"Modified": buildDate stats.mtime
+				else
+					fileInfo =
+						"File": no
+						"Path": path.basename file
+						"FullPath": path.normalize file
+				toSend =
+					"Response": "info"
+					"Info": fileInfo
+				toSend = JSON.stringify toSend
+				ws.send toSend
 			when "file"
 				# Load a file into the view
 				undefined
