@@ -3,6 +3,7 @@ fs = require "fs"
 crypto = require "crypto"
 path = require "path"
 commander = require "commander"
+sugar = require "sugar"
 
 USERDIR = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
 USERDIR = path.normalize(USERDIR);
