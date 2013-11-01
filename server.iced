@@ -53,27 +53,7 @@ readableSize = (size) ->
 	else
 		return size.toFixed(2) + " " + units[unitIndex]
 buildDate = (date) ->
-	dateString = ""
-	dateString += (date.getMonth() + 1)
-	dateString += "/"
-	dateString += date.getDate()
-	dateString += "/"
-	dateString += (date.getYear() % 100)
-	dateString += " "
-	dateString += (date.getHours() % 12)
-	dateString += ":"
-	if date.getMinutes() < 10
-		dateString += "0"
-	dateString += date.getMinutes()
-	dateString += ":"
-	if date.getSeconds() < 10
-		dateString += "0"
-	dateString += date.getSeconds()
-	dateString += " "
-	if date.getHours() < 12
-		dateString += "AM"
-	else
-		dateString += "PM"
+	dateString = date.format "{MM}/{d}/{yy} {12hr}:{mm}:{ss} {TT}"
 	return dateString
 checkValidPath = (file) ->
 	file = path.normalize file
