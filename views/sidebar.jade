@@ -8,21 +8,29 @@
 	h3(title=cwd)!= title
 if cwdSmall != "/"
 	.folder
-		h4 
-			a(href="../") ↩
+		- var upDir = cwdSmall.split("/");
+		- upDir.pop();
+		- upDir.pop();
+		- upDir = "/" + upDir.join("/") + "/";
+		h4: a(href=upDir) ↩
 each folder in dirList
+	- var cwdSmallEncoded = cwdSmall.split("/");
+	- for (var i = 0; i < cwdSmallEncoded.length; i++) {cwdSmallEncoded[i] = encodeURIComponent(cwdSmallEncoded[i])};
+	- cwdSmallEncoded = cwdSmallEncoded.join("/");
+	- var url = "/" + cwdSmallEncoded + encodeURIComponent(folder);
 	if folder[0] == "."
-		.folder.hidden
+		a(href=url): .folder.hidden
 			h4= folder
 	else
-		.folder
+		a(href=url): .folder
 			h4= folder
 each file, index in fileList
+	- var filePath = cwd + file;
 	if index == 0
-		.files-item.selected
+		.files-item.selected(data-path=filePath)
 			h4= file
 			p= infoList[index]
 	else
-		.files-item
+		.files-item(data-path=filePath)
 			h4= file
 			p= infoList[index]
