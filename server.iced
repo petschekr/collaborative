@@ -213,7 +213,65 @@ wss.on "connection", (ws) ->
 						"Error": "Unauthenticated"
 					toSend = JSON.stringify toSend
 					ws.send toSend
-				undefined
+				file = message.File
+				file = path.normalize file
+				unless checkValidPath file
+					toSend =
+						"Response": "rename"
+						"Error": "File not accessible"
+					toSend = JSON.stringify toSend
+					return ws.send toSend
+				newFile = message.NewFile
+				newFile = path.dirname(file) + "/" + newFile
+				newFile = path.normalize newFile
+				unless checkValidPath newFile
+					toSend =
+						"Response": "rename"
+						"Error": "File not accessible"
+					toSend = JSON.stringify toSend
+					return ws.send toSend
+				await fs.rename file, newFile, defer(err)
+				if err
+					toSend =
+						"Response": "rename"
+						"Error": err
+					toSend = JSON.stringify toSend
+					return ws.send toSend
+				toSend =
+					"Response": "rename"
+					"Success": true
+				toSend = JSON.stringify toSend
+				ws.send toSend
+			when "sidebar"
+				directory = message.Directory
+				directory = path.normalize directory
+				fullDirectory = path.join BASEPATH, (directory)
+
+				return unless checkValidPath(fullDirectory)
+
+				await fs.readdir fullDirectory, defer(err, entries)
+				return if err
+
+				dirList = []
+				fileList = []
+				infoList = []
+				for entry in entries
+					await fs.stat path.join(fullDirectory, entry), defer(err, stats)
+					if stats.isDirectory()
+						dirList.push entry
+					else if stats.isFile()
+						fileList.push entry
+						size = readableSize stats.size
+						date = buildDate stats.mtime
+						infoList.push size + " - " + date
+
+				app.render "sidebar.jade", {cwd: fullDirectory, cwdSmall: directory, dirList, fileList, infoList}, (err, html) ->
+					return if err
+					toSend =
+						"Response": "sidebar"
+						"Data": html
+					toSend = JSON.stringify toSend
+					ws.send toSend
 			else
 				console.warn "#{ip} sent invalid action: #{message.Action}"
 	ws.on "close", ->

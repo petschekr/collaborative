@@ -77,11 +77,34 @@ window.onload = ->
 				title = infoPane.querySelector ".file"
 				title.textContent = fileInfo.Path
 				title.title = fileInfo.FullPath
-
+				title.onclick = ->
+					newTitle = window.prompt "New document title:", title.textContent
+					return unless newTitle
+					newTitle.trim()
+					toSend =
+						"Action": "rename"
+						"File": fileInfo.FullPath
+						"NewFile": newTitle
+					toSend = JSON.stringify toSend
+					window.SOCKET.send toSend
 				mainInfo = infoPane.querySelector ".main-info"
 				mainInfo.textContent = "#{fileInfo.Size} · #{fileInfo.MimeType}"
 				dates = infoPane.querySelector ".dates"
 				dates.textContent = fileInfo.Time.Modified
+			when "rename"
+				if message.Success
+					toSend =
+						"Action": "sidebar"
+						"Directory": document.querySelector(".title").textContent
+					toSend = JSON.stringify toSend
+					window.SOCKET.send toSend
+				else
+					# Rename failed
+					console.warn message.Error
+			when "sidebar"
+				sidebar = document.querySelector "#list"
+				sidebar.innerHTML = message.Data
+				LoadFile()
 			else
 				console.warn "Server responded with unknown response of type '#{message.Response}'"
 

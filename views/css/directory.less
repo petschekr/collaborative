@@ -83,6 +83,20 @@ body, html, .content {
 	#delete {
 		margin-left: @spacing;
 	}
+	.file {
+		//padding: 3px;
+		cursor: pointer;
+		display: inline-block;
+		@titlepadding: 5px;
+		padding-left: @titlepadding;
+		padding-right: @titlepadding;
+		&:hover {
+			background-color: #eee;
+		}
+	}
+	.info {
+		margin-top: 5px;
+	}
 }
 .pure-button-error {
 	color: white;

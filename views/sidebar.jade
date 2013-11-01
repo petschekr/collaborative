@@ -1,0 +1,20 @@
+.title
+	h3(title=cwd)= cwdSmall
+// Links to folders
+each folder in dirList
+	if folder[0] == "."
+		.folder.hidden
+			h4= folder
+	else
+		.folder
+			h4= folder
+each file, index in fileList
+	- var filePath = cwd + file;
+	if index == 0
+		.files-item.selected(data-path=filePath)
+			h4= file
+			p= infoList[index]
+	else
+		.files-item(data-path=filePath)
+			h4= file
+			p= infoList[index]
