@@ -3,6 +3,8 @@ fs = require "fs"
 crypto = require "crypto"
 path = require "path"
 commander = require "commander"
+sugar = require "sugar"
+mime = require "mime"
 
 USERDIR = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
 USERDIR = path.normalize(USERDIR);
@@ -52,28 +54,11 @@ readableSize = (size) ->
 	else
 		return size.toFixed(2) + " " + units[unitIndex]
 buildDate = (date) ->
-	dateString = ""
-	dateString += (date.getMonth() + 1)
-	dateString += "/"
-	dateString += date.getDate()
-	dateString += "/"
-	dateString += (date.getYear() % 100)
-	dateString += " "
-	dateString += (date.getHours() % 12)
-	dateString += ":"
-	if date.getMinutes() < 10
-		dateString += "0"
-	dateString += date.getMinutes()
-	dateString += ":"
-	if date.getSeconds() < 10
-		dateString += "0"
-	dateString += date.getSeconds()
-	dateString += " "
-	if date.getHours() < 12
-		dateString += "AM"
-	else
-		dateString += "PM"
+	dateString = date.format "{MM}/{d}/{yy} {12hr}:{mm}:{ss} {TT}"
 	return dateString
+checkValidPath = (file) ->
+	file = path.normalize file
+	return file.match(new RegExp("^" + BASEPATH))
 
 express = require "express"
 app = express()
@@ -97,7 +82,7 @@ app.get "/*", (request, response) ->
 	directory = path.normalize directory
 	fullDirectory = path.join BASEPATH, (directory)
 
-	unless fullDirectory.match(new RegExp("^" + BASEPATH))
+	unless checkValidPath(fullDirectory)
 		# Failed the path check
 		response.redirect "/"
 
@@ -115,7 +100,7 @@ app.get "/*", (request, response) ->
 		else if stats.isFile()
 			fileList.push entry
 			size = readableSize stats.size
-			date = buildDate stats.ctime
+			date = buildDate stats.mtime
 			infoList.push size + " - " + date
 
 	response.render "directory.jade", {cwd: fullDirectory, cwdSmall: directory, dirList, fileList, infoList}, (err, html) ->
@@ -158,15 +143,135 @@ wss.on "connection", (ws) ->
 					"Authed": true
 				toSend = JSON.stringify toSend
 				ws.send toSend
+			when "info"
+				# Get information regarding a file
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
+
+				file = message.File
+				unless checkValidPath file
+					toSend =
+						"Response": "info"
+						"Error": "File not accessible"
+					toSend = JSON.stringify toSend
+					return ws.send toSend
+				await fs.stat file, defer(err, stats)
+				if err
+					toSend =
+						"Response": "info"
+						"Error": err
+					toSend = JSON.stringify toSend
+					return ws.send toSend
+				if stats.isFile()
+					fileInfo =
+						"File": yes
+						"Size": readableSize stats.size
+						"RawSize": stats.size
+						"Path": path.basename file
+						"FullPath": path.normalize file
+						"MimeType": mime.lookup file
+						"Time":
+							"Accessed": buildDate stats.atime
+							"Modified": buildDate stats.mtime
+				else
+					fileInfo =
+						"File": no
+						"Path": path.basename file
+						"FullPath": path.normalize file
+				toSend =
+					"Response": "info"
+					"Info": fileInfo
+				toSend = JSON.stringify toSend
+				ws.send toSend
 			when "file"
 				# Load a file into the view
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
 				undefined
 			when "edit"
 				# Person made a change to the open file
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
 				undefined
 			when "rename"
 				# Person renamed file
-				undefined
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
+				file = message.File
+				file = path.normalize file
+				unless checkValidPath file
+					toSend =
+						"Response": "rename"
+						"Error": "File not accessible"
+					toSend = JSON.stringify toSend
+					return ws.send toSend
+				newFile = message.NewFile
+				newFile = path.dirname(file) + "/" + newFile
+				newFile = path.normalize newFile
+				unless checkValidPath newFile
+					toSend =
+						"Response": "rename"
+						"Error": "File not accessible"
+					toSend = JSON.stringify toSend
+					return ws.send toSend
+				await fs.rename file, newFile, defer(err)
+				if err
+					toSend =
+						"Response": "rename"
+						"Error": err
+					toSend = JSON.stringify toSend
+					return ws.send toSend
+				toSend =
+					"Response": "rename"
+					"Success": true
+				toSend = JSON.stringify toSend
+				ws.send toSend
+			when "sidebar"
+				directory = message.Directory
+				directory = path.normalize directory
+				fullDirectory = path.join BASEPATH, (directory)
+
+				return unless checkValidPath(fullDirectory)
+
+				await fs.readdir fullDirectory, defer(err, entries)
+				return if err
+
+				dirList = []
+				fileList = []
+				infoList = []
+				for entry in entries
+					await fs.stat path.join(fullDirectory, entry), defer(err, stats)
+					if stats.isDirectory()
+						dirList.push entry
+					else if stats.isFile()
+						fileList.push entry
+						size = readableSize stats.size
+						date = buildDate stats.mtime
+						infoList.push size + " - " + date
+
+				app.render "sidebar.jade", {cwd: fullDirectory, cwdSmall: directory, dirList, fileList, infoList}, (err, html) ->
+					return if err
+					toSend =
+						"Response": "sidebar"
+						"Data": html
+					toSend = JSON.stringify toSend
+					ws.send toSend
 			else
 				console.warn "#{ip} sent invalid action: #{message.Action}"
 	ws.on "close", ->
