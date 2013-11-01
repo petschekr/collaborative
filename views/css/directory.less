@@ -69,3 +69,24 @@ body, html, .content {
 	transition: opacity @duration;
 	opacity: 1;
 }
+#info {
+	display: none;
+
+	text-align: center;
+	margin: 0 auto;
+	font-family: "Ubuntu";
+
+	@spacing: 4px;
+	#edit {
+		margin-right: @spacing;
+	}
+	#delete {
+		margin-left: @spacing;
+	}
+}
+.pure-button-error {
+	color: white;
+	//border-radius: 4px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+	background: rgb(202, 60, 60);
+}

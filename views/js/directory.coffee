@@ -57,7 +57,31 @@ window.onload = ->
 
 		switch message.Response
 			when "info"
-				undefined
+				# LoadFile() response from server
+				fileInfo = message.Info
+				return unless fileInfo.File
+				###
+				"File": yes
+				"Size": readableSize stats.size
+				"RawSize": stats.size
+				"Path": path.basename file
+				"FullPath": path.normalize file
+				"MimeType": mime.lookup file
+				"Time":
+					"Accessed": buildDate stats.atime
+					"Modified": buildDate stats.mtime
+				###
+				infoPane = document.getElementById "info"
+				infoPane.style.display = "block"
+
+				title = infoPane.querySelector ".file"
+				title.textContent = fileInfo.Path
+				title.title = fileInfo.FullPath
+
+				mainInfo = infoPane.querySelector ".main-info"
+				mainInfo.textContent = "#{fileInfo.Size} · #{fileInfo.MimeType}"
+				dates = infoPane.querySelector ".dates"
+				dates.textContent = fileInfo.Time.Modified
 			else
 				console.warn "Server responded with unknown response of type '#{message.Response}'"
 
