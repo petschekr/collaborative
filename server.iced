@@ -74,6 +74,9 @@ buildDate = (date) ->
 	else
 		dateString += "PM"
 	return dateString
+checkValidPath = (file) ->
+	file = path.normalize file
+	return file.match(new RegExp("^" + BASEPATH))
 
 express = require "express"
 app = express()
@@ -97,7 +100,7 @@ app.get "/*", (request, response) ->
 	directory = path.normalize directory
 	fullDirectory = path.join BASEPATH, (directory)
 
-	unless fullDirectory.match(new RegExp("^" + BASEPATH))
+	unless checkValidPath(fullDirectory)
 		# Failed the path check
 		response.redirect "/"
 
