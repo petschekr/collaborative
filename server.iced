@@ -163,6 +163,7 @@ wss.on "connection", (ws) ->
 					fileInfo =
 						"File": yes
 						"Size": readableSize stats.size
+						"RawSize": stats.size
 						"Path": path.basename file
 						"FullPath": path.normalize file
 						"Time":
