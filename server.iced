@@ -153,6 +153,12 @@ wss.on "connection", (ws) ->
 					ws.send toSend
 
 				file = message.File
+				unless checkValidPath file
+					toSend =
+						"Response": "info"
+						"Error": "File not accessible"
+					toSend = JSON.stringify toSend
+					return ws.send toSend
 				await fs.stat file, defer(err, stats)
 				if err
 					toSend =
