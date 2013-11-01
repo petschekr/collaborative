@@ -1,5 +1,11 @@
+- var title = cwdSmall;
+- title = title.replace(/&/g, "&amp;");
+- title = title.replace(/</g, "&lt;");
+- title = title.replace(/>/g, "&gt;");
+//- For line breaks
+- title = title.replace(/\//g, "/<wbr>");
 .title
-	h3(title=cwd)= cwdSmall
+	h3(title=cwd)!= title
 if cwdSmall != "/"
 	.folder
 		h4 
