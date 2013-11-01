@@ -99,7 +99,7 @@ app.get "/*", (request, response) ->
 		else if stats.isFile()
 			fileList.push entry
 			size = readableSize stats.size
-			date = buildDate stats.ctime
+			date = buildDate stats.mtime
 			infoList.push size + " - " + date
 
 	response.render "directory.jade", {cwd: fullDirectory, cwdSmall: directory, dirList, fileList, infoList}, (err, html) ->
