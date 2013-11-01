@@ -144,6 +144,13 @@ wss.on "connection", (ws) ->
 				ws.send toSend
 			when "info"
 				# Get information regarding a file
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
+
 				file = message.File
 				await fs.stat file, defer(err, stats)
 				if err
@@ -173,12 +180,30 @@ wss.on "connection", (ws) ->
 				ws.send toSend
 			when "file"
 				# Load a file into the view
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
 				undefined
 			when "edit"
 				# Person made a change to the open file
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
 				undefined
 			when "rename"
 				# Person renamed file
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
 				undefined
 			else
 				console.warn "#{ip} sent invalid action: #{message.Action}"
