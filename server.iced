@@ -4,6 +4,7 @@ crypto = require "crypto"
 path = require "path"
 commander = require "commander"
 sugar = require "sugar"
+mime = require "mime"
 
 USERDIR = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
 USERDIR = path.normalize(USERDIR);
@@ -166,6 +167,7 @@ wss.on "connection", (ws) ->
 						"RawSize": stats.size
 						"Path": path.basename file
 						"FullPath": path.normalize file
+						"MimeType": mime.lookup file
 						"Time":
 							"Accessed": buildDate stats.atime
 							"Modified": buildDate stats.mtime
