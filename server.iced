@@ -95,6 +95,10 @@ app.get "/*", (request, response) ->
 	infoList = []
 	for entry in entries
 		await fs.stat path.join(fullDirectory, entry), defer(err, stats)
+		if err
+			response.type "text/plain"
+			response.send 500, "An error occured fetching the file listing\n#{err}"
+			return
 		if stats.isDirectory()
 			dirList.push entry
 		else if stats.isFile()
@@ -257,6 +261,8 @@ wss.on "connection", (ws) ->
 				infoList = []
 				for entry in entries
 					await fs.stat path.join(fullDirectory, entry), defer(err, stats)
+					return if err
+					
 					if stats.isDirectory()
 						dirList.push entry
 					else if stats.isFile()
