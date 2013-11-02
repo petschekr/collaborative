@@ -247,6 +247,12 @@ wss.on "connection", (ws) ->
 				toSend = JSON.stringify toSend
 				ws.send toSend
 			when "sidebar"
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
 				directory = message.Directory
 				directory = path.normalize directory
 				fullDirectory = path.join BASEPATH, (directory)
@@ -262,7 +268,7 @@ wss.on "connection", (ws) ->
 				for entry in entries
 					await fs.stat path.join(fullDirectory, entry), defer(err, stats)
 					return if err
-					
+
 					if stats.isDirectory()
 						dirList.push entry
 					else if stats.isFile()
@@ -279,6 +285,12 @@ wss.on "connection", (ws) ->
 					toSend = JSON.stringify toSend
 					ws.send toSend
 			when "delete"
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
 				file = message.File
 				file = path.normalize file
 				return unless checkValidPath(file)
