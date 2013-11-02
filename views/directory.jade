@@ -5,6 +5,8 @@ html(lang="en")
 		title= cwdSmall
 		include css/pure-0.3.0.min.css
 		include css/directory.less
+		include ace/ace.js
+		//-script(src="ace/ace.js")
 		include js/directory.coffee
 	body
 		.pure-g-r.content
@@ -19,4 +21,11 @@ html(lang="en")
 						span.dates
 					button.pure-button.pure-button-primary#edit Edit
 					button.pure-button.pure-button-error#delete Delete
+				#editor
+    
+				//<script>
+				//    var editor = ace.edit("editor");
+				//    editor.setTheme("ace/theme/monokai");
+				//    editor.getSession().setMode("ace/mode/javascript");
+				//</script>
 			#status Connecting...
