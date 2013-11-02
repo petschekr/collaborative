@@ -29,6 +29,17 @@ window.onload = ->
 			"File": path
 		toSend = JSON.stringify toSend
 		window.SOCKET.send toSend
+	document.getElementById("delete").onclick = ->
+		fileName = document.querySelector("#info .file").textContent
+		areSure = confirm "Are you sure you want to delete \"#{fileName}\"?"
+		return unless areSure
+		file = document.querySelector ".files-item.selected"
+		path = file.attributes["data-path"].value
+		toSend =
+			"Action": "delete"
+			"File": path
+		toSend = JSON.stringify toSend
+		window.SOCKET.send toSend
 
 	host = window.location.host
 	window.SOCKET = new WebSocket "ws://#{host}"
@@ -105,6 +116,16 @@ window.onload = ->
 				sidebar = document.querySelector "#list"
 				sidebar.innerHTML = message.Data
 				LoadFile()
+			when "delete"
+				if message.Success
+					toSend =
+						"Action": "sidebar"
+						"Directory": document.querySelector(".title").textContent
+					toSend = JSON.stringify toSend
+					window.SOCKET.send toSend
+				else
+					# Rename failed
+					console.warn message.Error
 			else
 				console.warn "Server responded with unknown response of type '#{message.Response}'"
 

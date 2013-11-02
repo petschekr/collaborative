@@ -272,6 +272,23 @@ wss.on "connection", (ws) ->
 						"Data": html
 					toSend = JSON.stringify toSend
 					ws.send toSend
+			when "delete"
+				file = message.File
+				file = path.normalize file
+				return unless checkValidPath(file)
+
+				await fs.unlink file, defer(err)
+				if err
+					toSend =
+						"Response": "delete"
+						"Error": err
+					toSend = JSON.stringify toSend
+					return ws.send toSend
+				toSend =
+					"Response": "delete"
+					"Success": true
+				toSend = JSON.stringify toSend
+				ws.send toSend
 			else
 				console.warn "#{ip} sent invalid action: #{message.Action}"
 	ws.on "close", ->
