@@ -75,3 +75,48 @@ application/dash+xml mdp
 #       the `font/opentype` MIME type: http://i.imgur.com/8c5RN8M.png.
 # Added by: alrra
 font/opentype  otf
+
+# Types for programming languages in syntax modes used by CodeMirror
+text/x-c c h
+text/x-c++src cpp
+text/x-java class
+text/x-java java
+text/x-csharp cs
+text/x-scala scala
+text/x-coffeescript coffee
+text/x-common-lisp lisp
+text/css css
+text/x-scss scss
+text/x-d d
+application/xml-dtd dtd
+text/x-go go
+text/x-groovy groovy
+text/x-haml haml
+text/x-haskell has
+text/x-haxe haxe
+application/x-ejs ejs
+application/x-aspx aspx
+application/x-jsp jsp
+application/x-erb erb
+text/html html
+text/x-fortran f for
+message/http http
+text/x-jade jade
+text/javascript js
+application/json json
+text/typescript ts
+text/x-less less
+text/x-lua lua
+text/x-markdown md
+text/x-perl pl
+text/x-php php
+text/x-python py
+text/x-ruby rb
+text/x-rustsrc rs
+text/x-sass sass
+text/x-sh sh
+text/x-sql sql
+text/x-vb vb
+text/vbscript vbscript
+application/xml xml
+text/x-yaml yaml

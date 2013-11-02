@@ -4,7 +4,7 @@ crypto = require "crypto"
 path = require "path"
 commander = require "commander"
 sugar = require "sugar"
-mime = require "mime"
+mime = require "./node-mime/mime.js"
 
 USERDIR = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
 USERDIR = path.normalize(USERDIR);
