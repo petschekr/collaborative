@@ -116,6 +116,16 @@ window.onload = ->
 				sidebar = document.querySelector "#list"
 				sidebar.innerHTML = message.Data
 				LoadFile()
+			when "delete"
+				if message.Success
+					toSend =
+						"Action": "sidebar"
+						"Directory": document.querySelector(".title").textContent
+					toSend = JSON.stringify toSend
+					window.SOCKET.send toSend
+				else
+					# Rename failed
+					console.warn message.Error
 			else
 				console.warn "Server responded with unknown response of type '#{message.Response}'"
 
