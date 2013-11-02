@@ -22,7 +22,9 @@ window.onload = ->
 	LoadFile = ->
 		# Load the selected file
 		file = document.querySelector ".files-item.selected"
-		return unless file
+		unless file
+			document.getElementById("info").style.display = "none"
+			return
 		path = file.attributes["data-path"].value
 		toSend =
 			"Action": "info"
