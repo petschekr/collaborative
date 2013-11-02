@@ -7,12 +7,12 @@
 .title
 	h3(title=cwd)!= title
 if cwdSmall != "/"
-	.folder
-		- var upDir = cwdSmall.split("/");
-		- upDir.pop();
-		- upDir.pop();
-		- if (upDir.length < 1) {upDir = "/"} else {upDir = "/" + upDir.join("/") + "/";}
-		h4: a(href=upDir) ↩
+	- var upDir = cwdSmall.split("/");
+	- upDir.pop();
+	- upDir.pop();
+	- if (upDir.length < 1) {upDir = "/"} else {upDir = "/" + upDir.join("/") + "/";}
+	a(href=upDir): .folder
+		h4 ↩
 each folder in dirList
 	- if (cwdSmall !== "/") {
 	- 	var cwdSmallEncoded = cwdSmall.split("/");
