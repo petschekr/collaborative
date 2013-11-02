@@ -19,6 +19,15 @@ window.onload = ->
 		, 2000
 		return
 
+	SidebarLoaded = ->
+		console.log "Hi"
+		files = document.querySelectorAll(".files-item")
+		for file in files
+			file.onclick = ->
+				document.querySelector(".selected").className = "files-item"
+				@.className = "files-item selected"
+				LoadFile()
+	SidebarLoaded()
 	LoadFile = ->
 		# Load the selected file
 		file = document.querySelector ".files-item.selected"
@@ -117,6 +126,7 @@ window.onload = ->
 			when "sidebar"
 				sidebar = document.querySelector "#list"
 				sidebar.innerHTML = message.Data
+				SidebarLoaded()
 				LoadFile()
 			when "delete"
 				if message.Success
