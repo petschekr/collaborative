@@ -83,7 +83,7 @@ text/x-java class
 text/x-java java
 text/x-csharp cs
 text/x-scala scala
-text/x-coffeescript coffee
+text/x-coffeescript coffee iced
 text/x-common-lisp lisp
 text/css css
 text/x-scss scss
