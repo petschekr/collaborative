@@ -67,7 +67,7 @@ AVAILABLE_IDS = undefined
 app.configure ->
 	app.use express.compress()
 	app.use express.cookieParser()
-	app.use "/ace", express.static "views/ace"
+	app.use "/codemirror", express.static "views/codemirror-3.19"
 	if CREDENTIALS?
 		app.use express.basicAuth CREDENTIALS.username, CREDENTIALS.password, "Authentication required to collaborate"
 		AVAILABLE_IDS = []
@@ -79,7 +79,9 @@ app.configure ->
 			next()
 
 File = (request, response, directory, fullDirectory) ->
-	response.send "That's a file"
+	response.render "editor.jade", {fileName: directory}, (err, html) ->
+		if err then return response.send err
+		response.send html
 
 Folder = (request, response, directory, fullDirectory) ->
 	await fs.readdir fullDirectory, defer(err, entries)

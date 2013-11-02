@@ -3,8 +3,12 @@ html(lang="en")
 	head
 		include meta.html
 		title= fileName
+
+		include codemirror-3.19/lib/codemirror.js
+		include codemirror-3.19/lib/codemirror.css
+		// Codemirror syntax files
+		include codemirror-3.19/mode/javascript/javascript.js
+
 		include css/editor.less
-		script(src="ace/ace.js")
 		include js/editor.coffee
 	body
-		pre#editor

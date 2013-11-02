@@ -43,7 +43,5 @@ window.onload = ->
 	window.SOCKET.onclose = ->
 		console.error "The server closed the connection, this may mean that authentication failed"
 
-	# Ace Editor
-	window.Editor = ace.edit "editor"
-	window.Editor.setTheme "ace/theme/monokai"
-	window.Editor.getSession().setMode "ace/mode/javascript"
+	# CodeMirror
+	
