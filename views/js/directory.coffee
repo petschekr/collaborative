@@ -29,6 +29,17 @@ window.onload = ->
 			"File": path
 		toSend = JSON.stringify toSend
 		window.SOCKET.send toSend
+	document.getElementById("delete").onclick = ->
+		fileName = document.querySelector("#info .file").textContent
+		areSure = confirm "Are you sure you want to delete \"#{fileName}\"?"
+		return unless areSure
+		file = document.querySelector ".files-item.selected"
+		path = file.attributes["data-path"].value
+		toSend =
+			"Action": "delete"
+			"File": path
+		toSend = JSON.stringify toSend
+		window.SOCKET.send toSend
 
 	host = window.location.host
 	window.SOCKET = new WebSocket "ws://#{host}"
