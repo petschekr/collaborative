@@ -67,6 +67,7 @@ AVAILABLE_IDS = undefined
 app.configure ->
 	app.use express.compress()
 	app.use express.cookieParser()
+	app.use "/ace", express.static "views/ace"
 	if CREDENTIALS?
 		app.use express.basicAuth CREDENTIALS.username, CREDENTIALS.password, "Authentication required to collaborate"
 		AVAILABLE_IDS = []
@@ -77,15 +78,10 @@ app.configure ->
 			AVAILABLE_IDS.push id
 			next()
 
-app.get "/*", (request, response) ->
-	directory = request.params[0] + "/" or "/"
-	directory = path.normalize directory
-	fullDirectory = path.join BASEPATH, (directory)
+File = (request, response, directory, fullDirectory) ->
+	response.send "That's a file"
 
-	unless checkValidPath(fullDirectory)
-		# Failed the path check
-		response.redirect "/"
-
+Folder = (request, response, directory, fullDirectory) ->
 	await fs.readdir fullDirectory, defer(err, entries)
 	if err
 		response.send 404, "That directory doesn't exist"
@@ -110,6 +106,32 @@ app.get "/*", (request, response) ->
 	response.render "directory.jade", {cwd: fullDirectory, cwdSmall: directory, dirList, fileList, infoList}, (err, html) ->
 		if err then return response.send err
 		response.send html
+
+app.get "/*", (request, response) ->
+	directory = request.params[0] or "/"
+	directory = path.normalize directory
+	fullDirectory = path.join BASEPATH, (directory)
+
+	unless checkValidPath(fullDirectory)
+		# Failed the path check
+		response.redirect "/"
+
+	# Check if it's a file or directory
+	await fs.stat fullDirectory, defer(err, stats)
+	if err
+		response.type "text/plain"
+		response.send 500, """
+		That file (probably) doesn't exist
+
+		An error occured during file/directory check
+		#{err}
+		"""
+		return
+	if stats.isFile()
+		# Requested path is a file
+		File request, response, directory, fullDirectory
+	else
+		Folder request, response, directory, fullDirectory
 
 server = http.createServer(app).listen PORT, ->
 	console.log "You can now collaborate on port #{PORT}"

@@ -20,7 +20,6 @@ window.onload = ->
 		return
 
 	SidebarLoaded = ->
-		console.log "Hi"
 		files = document.querySelectorAll(".files-item")
 		for file in files
 			file.onclick = ->

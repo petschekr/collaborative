@@ -1,0 +1,10 @@
+doctype 5
+html(lang="en")
+	head
+		include meta.html
+		title= fileName
+		include css/editor.less
+		script(src="ace/ace.js")
+		include js/editor.coffee
+	body
+		pre#editor
