@@ -44,6 +44,7 @@ window.onload = ->
 		console.error "The server closed the connection, this may mean that authentication failed"
 
 	# CodeMirror
+	window.FileName = document.getElementById("filename").textContent
 	window.Editor = CodeMirror document.body, {
 		mode: "javascript"
 		indentUnit: 4
@@ -55,3 +56,14 @@ window.onload = ->
 	}
 	window.Editor.on "change", (CodeMirrorInstance, change) ->
 		console.log change
+		return if change.origin is undefined # Edit not made locally
+
+		toSend = {}
+		toSend.Action = "edit"
+		toSend.File = window.FileName
+		toSend.Info = {}
+		toSend.Info.from = change.from
+		toSend.Info.to = change.to
+		toSend.Info.text = change.text.join "\n"
+		toSend = JSON.stringify toSend
+		window.SOCKET.send toSend

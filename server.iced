@@ -224,15 +224,6 @@ wss.on "connection", (ws) ->
 					toSend = JSON.stringify toSend
 					ws.send toSend
 				undefined
-			when "edit"
-				# Person made a change to the open file
-				unless AUTHED
-					toSend =
-						"Response": message.Action
-						"Error": "Unauthenticated"
-					toSend = JSON.stringify toSend
-					ws.send toSend
-				undefined
 			when "rename"
 				# Person renamed file
 				unless AUTHED
@@ -319,6 +310,15 @@ wss.on "connection", (ws) ->
 					"Success": true
 				toSend = JSON.stringify toSend
 				ws.send toSend
+			when "edit"
+				# Person made a change to the open file
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
+				undefined
 			else
 				console.warn "#{ip} sent invalid action: #{message.Action}"
 	ws.on "close", ->
