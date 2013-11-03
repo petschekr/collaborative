@@ -59,6 +59,7 @@ window.onload = ->
 		autofocus: on
 		lineNumbers: on
 		theme: "solarized dark"
+		styleActiveLine: on
 	}
 	window.Editor.on "change", (CodeMirrorInstance, change) ->
 		console.log change
