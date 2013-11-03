@@ -134,6 +134,8 @@ app.get "/*", (request, response) ->
 		# Requested path is a file
 		File request, response, directory, fullDirectory
 	else
+		directory = path.normalize(directory + "/")
+		fullDirectory = path.normalize(fullDirectory + "/")
 		Folder request, response, directory, fullDirectory
 
 server = http.createServer(app).listen PORT, ->
