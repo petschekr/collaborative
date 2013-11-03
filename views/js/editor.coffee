@@ -51,8 +51,9 @@ window.onload = ->
 
 	# CodeMirror
 	window.FileName = document.getElementById("filename").textContent
+	window.MimeType = document.getElementById("mime").textContent
 	window.Editor = CodeMirror document.body, {
-		mode: "javascript"
+		mode: window.MimeType
 		indentUnit: 4
 		indentWithTabs: on
 		lineWrapping: on

@@ -79,7 +79,8 @@ app.configure ->
 			next()
 
 File = (request, response, directory, fullDirectory) ->
-	response.render "editor.jade", {fileName: directory}, (err, html) ->
+	mimeType = mime.lookup directory
+	response.render "editor.jade", {fileName: directory, mimeType: mimeType}, (err, html) ->
 		if err then return response.send err
 		response.send html
 
