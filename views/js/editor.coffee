@@ -44,4 +44,14 @@ window.onload = ->
 		console.error "The server closed the connection, this may mean that authentication failed"
 
 	# CodeMirror
-	
+	window.Editor = CodeMirror document.body, {
+		mode: "javascript"
+		indentUnit: 4
+		indentWithTabs: on
+		lineWrapping: on
+		autofocus: on
+		lineNumbers: on
+		theme: "solarized dark"
+	}
+	window.Editor.on "change", (CodeMirrorInstance, change) ->
+		console.log change
