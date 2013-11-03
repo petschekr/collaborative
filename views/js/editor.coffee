@@ -11,8 +11,12 @@ window.onload = ->
 				undefined
 		)
 	LoadFile = ->
-		# Load the file into the Ace editor
-		undefined
+		# Load the file into the editor
+		toSend =
+			"Action": "load"
+			"File": window.FileName
+		toSend = JSON.stringify toSend
+		window.SOCKET.send toSend
 
 	host = window.location.host
 	window.SOCKET = new WebSocket "ws://#{host}"
@@ -37,6 +41,8 @@ window.onload = ->
 		switch message.Response
 			when "edit"
 				undefined
+			when "load"
+				loadFile message
 			else
 				console.warn "Server responded with unknown response of type '#{message.Response}'"
 
@@ -57,6 +63,7 @@ window.onload = ->
 	window.Editor.on "change", (CodeMirrorInstance, change) ->
 		console.log change
 		return if change.origin is undefined # Edit not made locally
+		return if change.origin is "setValue" # Ignore file loading
 
 		toSend = {}
 		toSend.Action = "edit"
@@ -67,3 +74,11 @@ window.onload = ->
 		toSend.Info.text = change.text.join "\n"
 		toSend = JSON.stringify toSend
 		window.SOCKET.send toSend
+	# Begin loading the file
+	loadFile = (message) ->
+		if message.Info is "data"
+			currentContent = window.Editor.getValue()
+			currentContent += message.Chunk
+			window.Editor.setValue currentContent
+		else
+			console.log "#{message.File} loaded successfully"

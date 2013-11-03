@@ -310,6 +310,33 @@ wss.on "connection", (ws) ->
 					"Success": true
 				toSend = JSON.stringify toSend
 				ws.send toSend
+			when "load"
+				# Client requested that a file be streamed to them
+				unless AUTHED
+					toSend =
+						"Response": message.Action
+						"Error": "Unauthenticated"
+					toSend = JSON.stringify toSend
+					ws.send toSend
+				fileName = message.File
+				fileName = path.normalize fileName
+				fileName = path.join BASEPATH, fileName
+				readStream = fs.createReadStream fileName, {"encoding": "utf8"}
+				readStream.on "data", (chunk) ->
+					toSend =
+						"Response": "load"
+						"Info": "data"
+						"File": message.File
+						"Chunk": chunk
+					toSend = JSON.stringify toSend
+					ws.send toSend
+				readStream.on "end", ->
+					toSend =
+						"Response": "load"
+						"Info": "end"
+						"File": message.File
+					toSend = JSON.stringify toSend
+					ws.send toSend
 			when "edit"
 				# Person made a change to the open file
 				unless AUTHED
