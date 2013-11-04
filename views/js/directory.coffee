@@ -39,6 +39,21 @@ window.onload = ->
 			"File": path
 		toSend = JSON.stringify toSend
 		window.SOCKET.send toSend
+	document.getElementById("edit").onclick = ->
+		rawsize = document.getElementById("rawsize").textContent
+		rawsize = parseInt rawsize, 10
+		if rawsize > 2000000 # 2 MB
+			# File size warning
+			areSure = confirm "Editing a file this large can make your browser slow and unstable. Are you sure you want to continue?"
+			return unless areSure
+		fileName = document.querySelector("#info .file").textContent
+		directory = document.querySelector(".title").textContent
+		url = "#{directory}#{fileName}"
+		if directory isnt "/"
+			url = "/" + url
+		console.log url
+		window.open url, "_newtab"
+
 	document.getElementById("delete").onclick = ->
 		fileName = document.querySelector("#info .file").textContent
 		areSure = confirm "Are you sure you want to delete \"#{fileName}\"?"
@@ -112,6 +127,7 @@ window.onload = ->
 				mainInfo.textContent = "#{fileInfo.Size} · #{fileInfo.MimeType}"
 				dates = infoPane.querySelector ".dates"
 				dates.textContent = fileInfo.Time.Modified
+				document.getElementById("rawsize").textContent = fileInfo.RawSize
 			when "rename"
 				if message.Success
 					toSend =
