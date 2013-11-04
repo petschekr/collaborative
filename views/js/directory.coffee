@@ -52,7 +52,7 @@ window.onload = ->
 		if directory isnt "/"
 			url = "/" + url
 		console.log url
-		window.open url, "_newtab"
+		window.location = url
 
 	document.getElementById("delete").onclick = ->
 		fileName = document.querySelector("#info .file").textContent
