@@ -68,7 +68,12 @@ html(lang="en")
 		link(rel="stylesheet", href="/codemirror/theme/xq-dark.css")
 		link(rel="stylesheet", href="/codemirror/theme/xq-light.css")
 		// CodeMirror addons
+		script(src="/codemirror/addon/fold/xml-fold.js")
 		script(src="/codemirror/addon/selection/active-line.js")
+		script(src="/codemirror/addon/edit/matchbrackets.js")
+		script(src="/codemirror/addon/edit/closebrackets.js")
+		script(src="/codemirror/addon/edit/matchtags.js")
+		script(src="/codemirror/addon/edit/closetag.js")
 
 		include css/editor.less
 		include js/editor.coffee

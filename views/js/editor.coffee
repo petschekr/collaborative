@@ -60,11 +60,16 @@ window.onload = ->
 		autofocus: on
 		lineNumbers: on
 		theme: "solarized dark"
+		# Add ons
 		styleActiveLine: on
+		matchBrackets: on
+		autoCloseBrackets: on
+		matchTags: on
+		autoCloseTags: on
 	}
 	window.Editor.on "change", (CodeMirrorInstance, change) ->
 		console.log change
-		return if change.origin is undefined # Edit not made locally
+		#return if change.origin is undefined # Edit not made locally
 		return if change.origin is "setValue" # Ignore file loading
 
 		toSend = {}
