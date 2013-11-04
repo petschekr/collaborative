@@ -105,3 +105,7 @@ window.onload = ->
 			classes.pop()
 			classes = classes.join " "
 			panelButton.className = classes
+	themeInput = document.getElementById "theme"
+	themeInput.onchange = ->
+		theme = themeInput.options[themeInput.selectedIndex].value
+		window.Editor.setOption "theme", theme
