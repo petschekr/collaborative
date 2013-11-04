@@ -89,3 +89,19 @@ window.onload = ->
 			window.Editor.setValue currentContent
 		else
 			console.log "#{message.File} loaded successfully"
+
+	panelButton = document.getElementById "back"
+	panelButton.onclick = ->
+		classes = panelButton.className.split " "
+		if classes.length is 2
+			# Closed
+			document.querySelector(".CodeMirror").style.left = "250px";
+			classes.push "forward"
+			classes = classes.join " "
+			panelButton.className = classes
+		else
+			# Open
+			document.querySelector(".CodeMirror").style.left = "0";
+			classes.pop()
+			classes = classes.join " "
+			panelButton.className = classes
