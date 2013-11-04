@@ -105,7 +105,17 @@ window.onload = ->
 			classes.pop()
 			classes = classes.join " "
 			panelButton.className = classes
+	# Themes
 	themeInput = document.getElementById "theme"
 	themeInput.onchange = ->
 		theme = themeInput.options[themeInput.selectedIndex].value
 		window.Editor.setOption "theme", theme
+		localStorage.setItem "theme", theme
+	savedTheme = localStorage.getItem "theme"
+	if savedTheme?
+		themeOption = document.querySelector """option[value="#{savedTheme}"]"""
+		if themeOption?
+			themeOption.selected = true
+			window.Editor.setOption "theme", savedTheme
+		else
+			localStorage.removeItem "theme"
